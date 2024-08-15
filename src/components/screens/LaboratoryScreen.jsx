@@ -122,16 +122,6 @@ const PeaGeneticsSimulator = () => {
       action: () => handleInitialGeneration(),
       canProceed: () => generations.length > 0, // Avanza cuando la generación inicial se ha creado
     },
-    {
-      text: "Luego podrás ver las combinaciones posibles y el fenotipo de los nuevos guisantes.",
-      action: () => setShowCombinations(true),
-      canProceed: () => showCombinations, // Avanza cuando se muestran las combinaciones
-    },
-    {
-      text: "¡Eso es todo por ahora! Si tienes alguna pregunta, no dudes en preguntarla.",
-      action: () => { },
-      canProceed: () => true, // Se puede avanzar en cualquier momento
-    },
   ];
 
   const handlePeaSelection = (generationIndex, peaIndex) => {
@@ -241,7 +231,7 @@ const PeaGeneticsSimulator = () => {
   }, [])
 
   return (
-    <NeonGradientCard className="relative mx-auto my-auto ">
+    <NeonGradientCard className="relative mx-auto my-auto">
       {isTutorial && (
         <motion.div
           className="absolute -top-1/2 bg-white p-4 rounded-lg shadow-md text-center mb-10 cursor-grab z-50"
@@ -252,9 +242,11 @@ const PeaGeneticsSimulator = () => {
           dragConstraints={{ top: -200, bottom: 500, left: -500, right: 500 }} // Ajusta los límites de arrastre según sea necesario
           dragElastic={0.2} // Controla la elasticidad del arrastre
           whileDrag={{ scale: 1.05, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)" }} // Efecto visual durante el arrastre
+          role="dialog"
+          aria-labelledby="tutorial-dialog-title"
+          aria-describedby="tutorial-dialog-description"
         >
           <div className="flex justify-center items-center w-full">
-
             <img
               src={Principal}
               alt="Personaje del juego"
@@ -262,21 +254,33 @@ const PeaGeneticsSimulator = () => {
               onPointerEnter={playSqueak}
             />
           </div>
-          <p className='text-xl'>{tutorialSteps[tutorialStep].text}</p>
-
+          <h2 id="tutorial-dialog-title" className="sr-only">Tutorial</h2>
+          <p
+            id="tutorial-dialog-description"
+            className="text-xl"
+            aria-live="assertive"
+          >
+            {tutorialSteps[tutorialStep].text}
+          </p>
+  
           <button
-            onClick={nextTutorialStep}
+            onClick={() => {
+              if (tutorialSteps[tutorialStep].canProceed()) {
+                tutorialSteps[tutorialStep].action();
+                nextTutorialStep();
+              }
+            }}
             disabled={!tutorialSteps[tutorialStep].canProceed()}
             className={`bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-4
-    ${!tutorialSteps[tutorialStep].canProceed() ? 'opacity-50 cursor-not-allowed' : ''}
-  `}
+              ${!tutorialSteps[tutorialStep].canProceed() ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
           >
             Siguiente
           </button>
-
+  
           <button
             onClick={() => setIsTutorial(false)}
-            className=" bg-red-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-4 ml-4"
+            className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-4 ml-4"
           >
             Saltar Tutorial
           </button>
@@ -292,16 +296,18 @@ const PeaGeneticsSimulator = () => {
         {!showCombinations && (
           <motion.h1
             className="text-2xl font-bold text-green-800 max-w-sm"
+            //aria-live="polite" // Cambiar a "assertive" si no funciona bien
           >
             Simulador de Genética de Guisantes
             {generations.length > 0 && (
               <motion.p
-                className="text-lg mb-4"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
+                aria-live="assertive"
               >
-                Selecciona dos guisantes para mezclar sus genes y generar una nueva generación.
+                {/* Selecciona dos guisantes para mezclar sus genes y generar una nueva generación. */}
+                <p className="text-lg mb-4">Selecciona dos guisantes para mezclar sus genes y generar una nueva generación.</p>
               </motion.p>
             )}
           </motion.h1>
@@ -351,99 +357,93 @@ const PeaGeneticsSimulator = () => {
             />
           </motion.div>
         )}
-
-
-
       </motion.div>
 
       {generations.length === 0 && (
-        <>
-          <motion.p
-            className="text-lg"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Iniciaras la simulación con dos guisantes de la primera generación.
+  <>
+    <div
+      role="region"
+      aria-live="assertive"
+      aria-atomic="true"
+      aria-labelledby="instruction-section"
+      className="mb-4 p-4 border border-gray-300 rounded-lg bg-white"
+    >
+      {/* <h2 id="instruction-section" className="sr-only">
+        Instrucciones de la Simulación
+      </h2> */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        aria-live="assertive"
+      >
+        <p className="text-lg">
+          Iniciarás la simulación con dos guisantes de la primera generación.
+        </p>
+        <p className="text-lg mb-4">
+          Te presentamos a los padres:
+        </p>
+      </motion.div>
+    </div>
 
-          </motion.p>
-          <motion.p
-            className="text-lg mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+    <div
+      role="region"
+      aria-live="polite"
+      className="flex justify-center items-center space-x-4 mb-4"
+    >
+      <div
+        className='flex flex-col justify-center items-center'
+        aria-label="Parent 1: Verde Liso"
+      >
+        <motion.img
+          src={phenotypeToImageMap['verde-liso']}
+          alt="Verde Liso"
+          className="w-16 h-16"
+        />
+        <p className='text-center'>Verde Liso</p>
+      </div>
 
-            Te presentamos a los padres:
-          </motion.p>
-        </>
+      <div
+        className="text-2xl font-bold text-gray-700"
+        aria-hidden="true"
+      >
+        +
+      </div>
 
+      <div
+        className='flex flex-col justify-center items-center'
+        aria-label="Parent 2: Amarillo Rugoso"
+      >
+        <motion.img
+          src={phenotypeToImageMap['amarillo-rugoso']}
+          alt="Amarillo Rugoso"
+          className="w-16 h-16"
+        />
+        <p className='text-center'>Amarillo Rugoso</p>
+      </div>
+    </div>
 
-      )}
+    <div className='w-full flex justify-center'>
+      <motion.button
+        onClick={() => {
+          handleInitialGeneration();
+          playButtonClick();
+        }}
+        className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-4"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 1 }}
+        onMouseEnter={playHover}
+        aria-label="Iniciar Simulación"
+      >
+        Iniciar Simulación
+      </motion.button>
+    </div>
+  </>
+)}
 
-      {generations.length === 0 && (
-        <>
-          <motion.div className="flex justify-center items-center space-x-4 mb-4">
-            <motion.div className='flex flex-col justify-center items-center'
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1 }}>
-              <motion.img
-                src={phenotypeToImageMap['verde-liso']}
-                alt="Parent 1"
-                className="w-16 h-16"
-
-              />
-              <p className='text-center'>Verde Liso</p>
-            </motion.div>
-
-            <motion.div
-              className="text-2xl font-bold text-gray-700"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1.5, opacity: 1 }}
-              transition={{ duration: 1 }}
-            >
-              +
-            </motion.div>
-
-            <motion.div className='flex flex-col justify-center items-center'
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1 }}>
-              <motion.img
-                src={phenotypeToImageMap['amarillo-rugoso']}
-                alt="Parent 1"
-                className="w-16 h-16"
-
-              />
-              <p className='text-center'>Amarillo Rugoso</p>
-            </motion.div>
-
-
-
-          </motion.div>
-          <div className='w-full flex justify-center'>
-            <motion.button
-              onClick={() => {
-                handleInitialGeneration()
-                playButtonClick()
-              }}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mt-4"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 1 }}
-              onMouseEnter={playHover}
-
-            >
-              Iniciar Simulación
-            </motion.button>
-
-          </div>
-        </>
-
-      )}
 
       {!showCombinations && (
         <section className="max-h-80 overflow-y-auto">
