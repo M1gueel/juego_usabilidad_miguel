@@ -12,7 +12,12 @@ function TooltipButton({ onClick, tooltipText, Icon, ...props }) {
             className="relative bg-green-600 w-fit text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+<<<<<<< HEAD
             aria-label={tooltipText} // Añadido aria-label para accesibilidad
+=======
+            //linea agregada
+            aria-label={tooltipText} // Añade aria-label aquí
+>>>>>>> rama_con_cambios_de_usabilidad
             {...props}
         >
             <Icon size={20} />

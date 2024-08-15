@@ -36,7 +36,6 @@ const genotypeToImageMap = {
     'vvll': Genotype9,
 };
 
-
 export default function CombinationsTable({ combinations, showGenotype }) {
     const getImageForCombination = (phenotype, genotype) => {
         if (showGenotype) {
@@ -62,7 +61,6 @@ export default function CombinationsTable({ combinations, showGenotype }) {
                 Padres de esta generación
             </motion.p>
             <div className="flex justify-center items-center space-x-4 mb-4">
-
                 <motion.img
                     src={getImageForCombination(
                         combinations.parentsSelected.parent1.phenotype,
@@ -105,14 +103,13 @@ export default function CombinationsTable({ combinations, showGenotype }) {
                 role="table"
             >
                 <caption className="text-lg font-semibold mb-4">Tabla de combinaciones genéticas de color y textura</caption>
-
                 <tbody>
                     {[...Array(4)].map((_, rowIndex) => (
                         <tr key={rowIndex}>
                             {[...Array(4)].map((_, colIndex) => {
                                 const combination = filledCombinations[rowIndex * 4 + colIndex];
                                 if (!combination) {
-                                    return <td key={colIndex} className="border px-6 py-4"></td>;
+                                    return <td key={colIndex} className="border px-6 py-4" tabIndex="0"></td>;
                                 }
 
                                 const phenotype = `${combination.genotype.color.includes('V') ? 'verde' : 'amarillo'}-${combination.genotype.texture.includes('L') ? 'liso' : 'rugoso'}`;
@@ -120,7 +117,7 @@ export default function CombinationsTable({ combinations, showGenotype }) {
                                 const image = getImageForCombination(phenotype, genotypeKey);
 
                                 return (
-                                    <td key={colIndex} className="border px-6 py-4 text-center bg-gray-50 hover:bg-gray-100" role="cell">
+                                    <td key={colIndex} className="border px-6 py-4 text-center bg-gray-50 hover:bg-gray-100" role="cell" tabIndex="0">
                                         {image && (
                                             <img
                                                 src={image}
@@ -137,7 +134,6 @@ export default function CombinationsTable({ combinations, showGenotype }) {
                     ))}
                 </tbody>
             </motion.table>
-
         </div>
     );
 }
